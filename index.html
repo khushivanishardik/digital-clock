@@ -5,7 +5,7 @@
   <style>
   body {
     background: black;
-    color: #127cd8;
+    color: #6764f2;
     text-align: center;
     font-family: 'Courier New', monospace;
     margin-top: 100px;
@@ -18,7 +18,7 @@
 
   #date {
     font-size: 50px;
-    color: #127cd8;
+    color:  #6764f2;
     margin-top:20px;
   }
 
@@ -26,6 +26,46 @@
     color: white;
     margin-bottom: 30px;
   }
+
+  #features {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 15px;
+  width: 250px;
+  text-align: center;
+  box-shadow: 0 0 15px  #6764f2;
+}
+
+#stopwatch {
+  font-size: 25px;
+  margin: 10px 0;
+}
+
+button {
+  margin: 5px;
+  padding: 6px 12px;
+  border: none;
+  background:  #6764f2;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background:  #6764f2;
+}
+
+input {
+  padding: 5px;
+  margin: 10px;
+}
 </style>
 </head>
 <body>
@@ -33,6 +73,26 @@
 <h2>Digital Clock ⏰</h2>
 <h1 id="time">Loading...</h1>
 <h3 id="date"></h3>
+
+<div id="features">
+
+  <div class="card">
+    <h3>⏱ Stopwatch</h3>
+    <p id="stopwatch">00:00:00</p>
+    <button onclick="startStopwatch()">Start</button>
+    <button onclick="pauseStopwatch()">Pause</button>
+    <button onclick="resetStopwatch()">Reset</button>
+  </div>
+
+  <div class="card">
+    <h3>🔔 Alarm</h3>
+    <input type="time" id="alarmTime">
+    <button onclick="setAlarm()">Set</button>
+    <button onclick="stopAlarm()">Stop</button>
+    <p id="alarmStatus"></p>
+  </div>
+
+</div>
 
 <script>
 function updateClock() {
@@ -48,6 +108,72 @@ function updateClock() {
 
 setInterval(updateClock, 1000);
 updateClock();
+
+let stopwatchInterval = null;
+let seconds = 0;
+let running = false;
+
+function updateStopwatch() {
+  let hrs = String(Math.floor(seconds / 3600)).padStart(2, '0');
+  let mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+  let secs = String(seconds % 60).padStart(2, '0');
+
+  document.getElementById("stopwatch").innerText =
+    `${hrs}:${mins}:${secs}`;
+  seconds++;
+}
+
+function startStopwatch() {
+  if (!running) {
+    stopwatchInterval = setInterval(updateStopwatch, 1000);
+    running = true;
+  }
+}
+
+function pauseStopwatch() {
+  clearInterval(stopwatchInterval);
+  running = false;
+}
+
+function resetStopwatch() {
+  clearInterval(stopwatchInterval);
+  seconds = 0;
+  running = false;
+  document.getElementById("stopwatch").innerText = "00:00:00";
+}
+
+let alarmTime = null;
+let alarmActive = false;
+
+function setAlarm() {
+  alarmTime = document.getElementById("alarmTime").value;
+  alarmActive = true;
+
+  document.getElementById("alarmStatus").innerText =
+    "Alarm set for " + alarmTime;
+}
+
+function stopAlarm() {
+  alarmActive = false;
+
+  document.getElementById("alarmStatus").innerText =
+    "Alarm stopped";
+}
+
+setInterval(() => {
+  if (!alarmActive) return;
+
+  const now = new Date();
+  const currentTime = now.toTimeString().slice(0, 5);
+
+  if (alarmTime === currentTime) {
+    document.getElementById("alarmStatus").innerText =
+      "⏰ Alarm Ringing!";
+    alert("⏰ Wake up!");
+    alarmActive = false;
+  }
+}, 1000);
+
 </script>
 
 
